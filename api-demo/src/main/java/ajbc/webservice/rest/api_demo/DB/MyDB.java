@@ -2,9 +2,11 @@ package ajbc.webservice.rest.api_demo.DB;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class MyDB {
 		// seeding the db
 		seedStudent();
 		seedCourse();
+		updateStudentsWithCourse();
 	}
 
 	private void seedStudent() {
@@ -36,7 +39,7 @@ public class MyDB {
 				new Student("Gabby", "Dice", 98.1),
 				new Student("Charles", "Samson", 78.9), 
 				new Student("Rachel", "Palace", 89.2));
-
+		
 		students = studentList.stream().collect(Collectors.toMap(Student::getID, Function.identity()));
 	}
 	
@@ -47,6 +50,15 @@ public class MyDB {
 				new Course("The art of wisdom")
 				);
 		this.courses = courses.stream().collect(Collectors.toMap(Course::getNUMBER, Function.identity()));
+	}
+	
+
+	private void updateStudentsWithCourse() {
+		long defaultCourseIndex = 1000;
+		
+		for(Student student : students.values()) {
+			student.addCourse(courses.get(defaultCourseIndex));
+		}
 	}
 
 	public Map<Long, Student> getStudents() {
