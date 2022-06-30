@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.cfg.CreateKeySecondPass;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,9 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import adjb.learn.models.Category;
 import adjb.learn.models.Product;
+import adjb.learn.models.Supplier;
 
 @SuppressWarnings("unchecked")
 @Component(value = "htDao")
@@ -69,7 +72,28 @@ public class HibernateTemplateProductDao implements ProductDao {
 	public List<Product> getProductsInCategory(Integer categoryId) throws DaoException {
 		DetachedCriteria criteria = DetachedCriteria.forClass(Product.class);
 		criteria.add(Restrictions.eq("categoryId", categoryId));
-		return (List<Product>) template.findByCriteria(criteria);
+		List<Product> products = (List<Product>) template.findByCriteria(criteria);
+		
+		if(products == null) {
+			throw new DaoException("There are no products in this category");
+		}
+		
+		return products;
+	}
+	
+
+	@Override
+	public List<Product> getProductsOfSupplier(Integer supplierId) throws DaoException {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Product.class);
+		criteria.add(Restrictions.eq("supplierId", supplierId));
+		
+		List<Product> products = (List<Product>)template.findByCriteria(criteria);
+		
+		if(products == null) {
+			throw new DaoException("There are no products from this supplier");
+		}
+		
+		return products;
 	}
 
 	@Override
@@ -101,11 +125,8 @@ public class HibernateTemplateProductDao implements ProductDao {
 	}
 	
 	@Override
-	public void deleteCategory(int categoryId) throws DaoException {
-		DetachedCriteria criteria = DetachedCriteria.forClass(Product.class);
-		criteria.add(Restrictions.eq("categoryId", categoryId));
-		
-		List<Product> products = (List<Product>)template.findByCriteria(criteria);
+	public void deleteCategory(Integer categoryId) throws DaoException {
+		List<Product> products = getProductsInCategory(categoryId);
 		
 		for (Product product : products) {
 			product.setCategory(null);
@@ -114,15 +135,24 @@ public class HibernateTemplateProductDao implements ProductDao {
 	}
 
 	@Override
-	public void deleteSupplier(int supplierId) throws DaoException {
-		DetachedCriteria criteria = DetachedCriteria.forClass(Product.class);
-		criteria.add(Restrictions.eq("supplierId", supplierId));
-		
-		List<Product> products = (List<Product>)template.findByCriteria(criteria);
+	public void deleteSupplier(Integer supplierId) throws DaoException {
+		List<Product> products = getProductsOfSupplier(supplierId);
 		
 		for (Product product : products) {
 			product.setSupplier(null);
 			updateProduct(product);
 		}
+	}
+
+	@Override
+	public Category getCategoryOfProduct(Integer productId) throws DaoException {
+		Product product = getProduct(productId);
+		return product.getCategory();
+	}
+
+	@Override
+	public Supplier getSupplierOfProduct(Integer productId) throws DaoException {
+		Product product = getProduct(productId);
+		return product.getSupplier();
 	}
 }

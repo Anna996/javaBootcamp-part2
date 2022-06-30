@@ -30,4 +30,5 @@ public class Category {
 	private String description;
 	@JsonIgnore
 	private byte[] picture;
+	private String inActive;
 }

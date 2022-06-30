@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import adjb.learn.models.Category;
 import adjb.learn.models.Product;
+import adjb.learn.models.Supplier;
 
 @Transactional(readOnly = true, rollbackFor = { DaoException.class })
 public interface ProductDao {
@@ -41,6 +43,10 @@ public interface ProductDao {
 	public default List<Product> getProductsInCategory(Integer categoryId) throws DaoException {
 		throw new DaoException("Method not implemented");
 	}
+	
+	public default List<Product> getProductsOfSupplier(Integer supplierId) throws DaoException {
+		throw new DaoException("Method not implemented");
+	}
 
 	public default List<Product> getProductsNotInStock() throws DaoException {
 		throw new DaoException("Method not implemented");
@@ -59,12 +65,20 @@ public interface ProductDao {
 	}
 
 	@Transactional(readOnly = false)
-	public default void deleteCategory(int categoryId) throws DaoException {
+	public default void deleteCategory(Integer categoryId) throws DaoException {
 		throw new DaoException("Method not implemented");
 	}
 
 	@Transactional(readOnly = false)
-	public default void deleteSupplier(int supplierId) throws DaoException {
+	public default void deleteSupplier(Integer supplierId) throws DaoException {
+		throw new DaoException("Method not implemented");
+	}
+	
+	public default Category getCategoryOfProduct(Integer productId)  throws DaoException {
+		throw new DaoException("Method not implemented");
+	}
+	
+	public default Supplier getSupplierOfProduct(Integer productId)  throws DaoException {
 		throw new DaoException("Method not implemented");
 	}
 }

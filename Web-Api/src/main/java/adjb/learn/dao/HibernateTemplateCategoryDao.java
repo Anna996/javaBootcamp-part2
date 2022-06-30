@@ -40,7 +40,7 @@ public class HibernateTemplateCategoryDao implements CategoryDao {
 	@Override
 	public void deleteCategory(int id) throws DaoException {
 		Category category = getCategory(id);
-		category.setCatName("-1");
+		category.setInActive("1");
 		updateCategory(category);
 	}
 

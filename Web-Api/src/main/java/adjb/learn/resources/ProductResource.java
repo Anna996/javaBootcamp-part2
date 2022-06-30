@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import adjb.learn.dao.DaoException;
 import adjb.learn.dao.ProductDao;
+import adjb.learn.models.Category;
 import adjb.learn.models.ErrorMessage;
 import adjb.learn.models.Product;
+import adjb.learn.models.Supplier;
 
 @RequestMapping("/products")
 @RestController
@@ -56,6 +58,8 @@ public class ProductResource {
 //		
 //		return ResponseEntity.ok(products);
 //	}
+	
+	// ======================================= GET =======================================
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Product>> getProductsByRange(@RequestParam Map<String, String> map) throws DaoException {
@@ -91,6 +95,68 @@ public class ProductResource {
 		}
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, path = "/{id}/category")
+	public ResponseEntity<?> getCategoryOfProduct(@PathVariable int id){
+		
+		try {
+			Category category = dao.getCategoryOfProduct(id);
+			
+			if(category == null) {
+				throw new DaoException("There is no category ");
+			}
+			
+			return ResponseEntity.ok(category);
+		} catch (DaoException e) {
+			ErrorMessage eMessage = ErrorMessage.getErrorMessage(e.getMessage(), "product id: " + id);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eMessage);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/{id}/supplier")
+	public ResponseEntity<?> getSupplierOfProduct(@PathVariable int id){
+		
+		try {
+			Supplier supplier = dao.getSupplierOfProduct(id);
+			
+			if(supplier == null) {
+				throw new DaoException("There is no supplier ");
+			}
+			
+			return ResponseEntity.ok(supplier);
+			
+		} catch (DaoException e) {
+			ErrorMessage eMessage = ErrorMessage.getErrorMessage(e.getMessage(), "product id: " + id);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eMessage);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/category/{categoryId}")
+	public ResponseEntity<?> getProductsInCategory(@PathVariable int categoryId){
+		
+		try {
+			List<Product> products = dao.getProductsInCategory(categoryId);
+			return ResponseEntity.ok(products);
+		} catch (DaoException e) {
+			ErrorMessage eMessage = ErrorMessage.getErrorMessage(e.getMessage(), "category id: " + categoryId);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eMessage);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/supplier/{supplierId}")
+	public ResponseEntity<?> getProductsOfSupplier(@PathVariable int supplierId){
+		
+		try {
+			List<Product> products = dao.getProductsOfSupplier(supplierId);
+			return ResponseEntity.ok(products);
+		} catch (DaoException e) {
+			ErrorMessage eMessage = ErrorMessage.getErrorMessage(e.getMessage(), "supplier id: " + supplierId);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(eMessage);
+		}
+	}
+	
+	
+	// ======================================= POST =======================================
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> addProduct(@RequestBody Product product) {
 		
@@ -105,6 +171,8 @@ public class ProductResource {
 			return ResponseEntity.status(HttpStatus.valueOf(500)).body(errorMessage);
 		}
 	}
+	
+	// ======================================= PUT =======================================
 	
 	@RequestMapping(method = RequestMethod.PUT, path="/{id}")
 	public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable Integer id) {
@@ -123,6 +191,8 @@ public class ProductResource {
 	}
 	
 
+	// ======================================= DELETE =======================================
+	
 	@RequestMapping(method = RequestMethod.DELETE, path="/{id}")
 	public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
 		

@@ -33,4 +33,5 @@ public class Supplier {
 	private String phone;
 	private String fax;
 	private String homePage;
+	private String inActive;
 }
